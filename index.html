@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>WebZip Scraper | Blue Phantom Ultimate - Fixed</title>
+    <title>WebZip Scraper | Full ZIP + History Permanen</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -35,7 +35,7 @@
         }
         .scroll-progress { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6); z-index: 1000; transition: width 0.1s; box-shadow: 0 0 12px #3b82f6; }
         
-        /* LOADING SCREEN BUKAN SKELETON */
+        /* LOADING SCREEN */
         .loading-screen {
             position: fixed;
             inset: 0;
@@ -55,63 +55,66 @@
         @keyframes pulseText { 0% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 14px #3b82f6; } 100% { opacity: 0.6; } }
         @keyframes fadeText { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
+        /* SIDEBAR HISTORY (permanen localStorage) */
+        .app-wrapper { display: flex; min-height: 100vh; }
+        .sidebar {
+            width: 300px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-right: 1.5px solid #3b82f6;
+            padding: 24px 16px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 60;
+        }
+        .sidebar-header { font-size: 22px; font-weight: 800; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 2px solid #3b82f6; color: #60a5fa; display: flex; gap: 12px; align-items: center; }
+        .history-list { display: flex; flex-direction: column; gap: 14px; }
+        .history-item {
+            background: rgba(59,130,246,0.08);
+            border-radius: 20px;
+            padding: 14px;
+            cursor: pointer;
+            transition: 0.25s;
+            border: 1px solid transparent;
+        }
+        .history-item:hover { background: rgba(59,130,246,0.2); transform: translateX(5px); border-color: #3b82f6; }
+        .history-url { font-size: 12px; font-weight: 700; color: #93c5fd; word-break: break-all; }
+        .history-date { font-size: 10px; color: #9ca3ff; margin-top: 6px; }
+        .history-total { font-size: 10px; color: #c7d2fe; margin-top: 4px; }
+        .clear-history {
+            background: rgba(239,68,68,0.2);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 50px;
+            text-align: center;
+            margin-top: 32px;
+            cursor: pointer;
+        }
+
+        .main-content { margin-left: 300px; flex: 1; padding: 32px 40px; max-width: calc(100% - 300px); }
         .navbar {
             background: rgba(10, 10, 42, 0.85);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid #3b82f6;
-            padding: 16px 32px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            padding: 14px 28px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 80px;
         }
-        .nav-container { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 800; }
-        .logo i { color: #3b82f6; font-size: 28px; }
+        .logo { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 800; }
+        .logo i { color: #3b82f6; font-size: 26px; }
         .logo span { background: linear-gradient(135deg, #fff, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .nav-menu { display: flex; gap: 12px; background: rgba(59,130,246,0.1); padding: 6px; border-radius: 60px; }
         .nav-btn { padding: 10px 28px; border-radius: 40px; font-weight: 700; font-size: 14px; cursor: pointer; background: transparent; color: #9ca3ff; border: none; transition: 0.2s; }
         .nav-btn.active { background: linear-gradient(135deg, #3b82f6, #1e40af); color: white; box-shadow: 0 0 12px #3b82f6; }
 
-        .main-container { max-width: 1280px; margin: 0 auto; padding: 40px 24px; }
-        .menu-wrapper { position: relative; min-height: 400px; }
-        .menu-loader { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; border: 3px solid rgba(59,130,246,0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spinLoader 1s linear infinite; display: none; }
-
-        /* WELCOME MODAL */
-        .welcome-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 10, 42, 0.98);
-            backdrop-filter: blur(12px);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.4s;
-        }
-        .modal-card {
-            background: #0f0f2f;
-            border-radius: 48px;
-            padding: 40px 32px;
-            width: 90%;
-            max-width: 460px;
-            text-align: center;
-            border: 2px solid #3b82f6;
-            box-shadow: 0 0 40px rgba(59,130,246,0.5);
-            animation: fadeInScale 0.4s ease;
-        }
-        @keyframes fadeInScale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
-        .welcome-text { font-size: 36px; font-weight: 800; letter-spacing: 2px; margin-bottom: 20px; background: linear-gradient(135deg, #fff, #3b82f6, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .modal-avatar { width: 100px; height: 100px; margin: 16px auto; display: flex; align-items: center; justify-content: center; }
-        .modal-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 0 20px #3b82f6; border: 2px solid #60a5fa; }
-        .modal-title { font-size: 28px; font-weight: 800; margin: 12px 0; background: linear-gradient(135deg, #fff, #60a5fa); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .modal-info { color: #9ca3ff; margin-bottom: 24px; font-size: 14px; }
-        .modal-start { background: linear-gradient(135deg, #3b82f6, #1e40af); border: none; padding: 12px 28px; border-radius: 60px; font-weight: bold; color: white; cursor: pointer; margin-bottom: 20px; }
-        .modal-links { display: flex; justify-content: center; gap: 28px; }
-        .contact-link { color: #60a5fa; text-decoration: none; font-weight: 600; padding: 6px 12px; border-radius: 30px; }
-
-        .hero-title { font-size: 48px; font-weight: 800; text-align: center; margin-bottom: 20px; background: linear-gradient(135deg, #fff, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .hero-title { font-size: 42px; font-weight: 800; text-align: center; margin-bottom: 18px; background: linear-gradient(135deg, #fff, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .hero-subtitle { text-align: center; color: #9ca3ff; margin-bottom: 40px; }
-        .url-example { background: #1e1e4a; border-radius: 60px; padding: 12px 24px; text-align: center; width: fit-content; margin: 0 auto 30px; border: 1px solid #3b82f6; }
+        .url-example { background: #1e1e4a; border-radius: 60px; padding: 10px 26px; text-align: center; width: fit-content; margin: 0 auto 35px; border: 1px solid #3b82f6; }
 
         .steps-section { margin: 50px 0; }
         .section-title { text-align: center; font-size: 28px; font-weight: 700; margin-bottom: 32px; color: #3b82f6; }
@@ -130,7 +133,7 @@
         }
         .step-card:hover { transform: translateY(-6px); box-shadow: 0 0 30px rgba(59,130,246,0.3); border-color: #60a5fa; }
         .step-number { width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6, #1e40af); border-radius: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; margin: 0 auto 20px; color: white; }
-        .step-card h3 { font-size: 20px; margin-bottom: 12px; color: #e0e0ff; }
+        .step-card h3 { font-size: 20px; margin-bottom: 12px; }
         .step-card p { color: #9ca3ff; font-size: 14px; }
 
         .scraper-panel { background: rgba(30, 30, 70, 0.7); border-radius: 32px; padding: 28px; border: 1px solid #3b82f6; }
@@ -144,10 +147,9 @@
         .download-btn { background: linear-gradient(135deg, #3b82f6, #1e40af); border: none; padding: 12px; border-radius: 40px; font-weight: bold; color: white; width: 100%; margin-top: 20px; cursor: pointer; }
         .file-stats { background: #1e1e4a; border-radius: 20px; padding: 12px 16px; margin-top: 16px; border: 1px solid #3b82f6; font-size: 13px; }
         .result-area { background: #0a0a2a; margin-top: 20px; padding: 16px; border-radius: 20px; font-family: monospace; font-size: 12px; border: 1px solid #3b82f6; max-height: 250px; overflow-y: auto; }
-        footer { text-align: center; margin-top: 60px; color: #6b72b0; border-top: 1px solid #3b82f6; padding: 30px; font-size: 12px; }
-        .toast { position: fixed; bottom: 20px; right: 20px; background: #1e1e4a; padding: 12px 24px; border-radius: 40px; border-left: 4px solid #10b981; z-index: 1100; color: #90cdf4; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #1e1e4a; padding: 12px 24px; border-radius: 40px; border-left: 4px solid #10b981; z-index: 1100; color: #90cdf4; font-size: 14px; }
+        footer { text-align: center; margin-top: 60px; color: #6b72b0; border-top: 1px solid #3b82f6; padding: 30px; }
         
-        /* efek kilatan step-card */
         .step-card:active::after {
             content: '';
             position: absolute;
@@ -162,7 +164,7 @@
             pointer-events: none;
         }
         @keyframes rippleFlash { 0% { width: 0; height: 0; opacity: 0.8; } 100% { width: 240px; height: 240px; opacity: 0; } }
-        @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } .hero-title { font-size: 32px; } .nav-btn { padding: 6px 16px; } }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); position: fixed; } .main-content { margin-left: 0; width: 100%; padding: 20px; } .steps-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -171,70 +173,58 @@
 <div class="firefly-container" id="fireflyContainer"></div>
 <div class="scroll-progress" id="scrollProgress"></div>
 
-<!-- LOADING SCREEN BUKAN SKELETON -->
+<!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-logo">⚡ WebZip Scraper ⚡</div>
     <div class="loading-spinner"></div>
     <div class="loading-text">Memuat Blue Phantom Engine ...</div>
-    <div class="loading-text" style="font-size: 13px; opacity:0.7;">Inisialisasi partikel biru & sistem scraping</div>
+    <div class="loading-text" style="font-size: 13px; opacity:0.7;">Inisialisasi partikel biru & sistem history</div>
 </div>
 
-<!-- WELCOME MODAL -->
-<div id="welcomeModal" class="welcome-modal">
-    <div class="modal-card">
-        <div class="welcome-text">WELCOME TO</div>
-        <div class="modal-avatar">
-            <img src="image/foto.png" alt="Avatar" onerror="this.src='https://placehold.co/100x100/3b82f6/white?text=Logo'">
-        </div>
-        <div class="modal-title">WebZip Scraper</div>
-        <div class="modal-info">Extract web data + auto file detection</div>
-        <button class="modal-start" id="closeModalBtn">GET STARTED</button>
-        <div class="modal-links">
-            <a href="#" class="contact-link" id="contactBtn">Contact</a>
-            <a href="#" class="contact-link" id="waBtn">WhatsApp</a>
-        </div>
-    </div>
-</div>
+<div class="app-wrapper">
+    <!-- SIDEBAR HISTORY PERMANEN -->
+    <aside class="sidebar" id="historySidebar">
+        <div class="sidebar-header"><i class="fas fa-history"></i> History Scrape</div>
+        <div id="historyList" class="history-list"></div>
+        <div class="clear-history" id="clearHistoryBtn"><i class="fas fa-trash-alt"></i> Hapus Semua History</div>
+    </aside>
 
-<nav class="navbar">
-    <div class="nav-container">
-        <div class="logo"><i class="fas fa-bolt"></i><span>WebZip Scraper</span></div>
-        <div class="nav-menu">
-            <button class="nav-btn active" data-menu="getstarted">Get Started</button>
-            <button class="nav-btn" data-menu="scraper">Web Scraper</button>
-        </div>
-    </div>
-</nav>
-
-<main class="main-container" id="mainContent" style="display: none;">
-    <div id="menuGetStarted" class="menu-wrapper">
-        <div class="hero-title">Extract Web Data to Instant ZIP</div>
-        <div class="hero-subtitle">Blue Phantom Technology • Kompas Layout Style</div>
-        <div class="url-example">Example URL: https://id.wikipedia.org/wiki/Main_Page</div>
-        <div class="steps-section">
-            <div class="section-title">How to Use</div>
-            <div class="steps-grid">
-                <div class="step-card"><div class="step-number">1</div><h3>Enter URL</h3><p>Paste your target website link</p></div>
-                <div class="step-card"><div class="step-number">2</div><h3>Detect Files</h3><p>Auto detects images, CSS, JS & assets</p></div>
-                <div class="step-card"><div class="step-number">3</div><h3>Download ZIP</h3><p>Get all files packed as ZIP instantly</p></div>
+    <div class="main-content">
+        <div class="navbar">
+            <div class="logo"><i class="fas fa-bolt"></i><span>WebZip Scraper</span></div>
+            <div class="nav-menu">
+                <button class="nav-btn active" data-menu="getstarted">Get Started</button>
+                <button class="nav-btn" data-menu="scraper">Web Scraper</button>
             </div>
         </div>
-        <div class="menu-loader" id="loaderGetStarted"></div>
-    </div>
 
-    <div id="menuScraper" class="menu-wrapper" style="display: none;">
-        <div class="scraper-panel">
-            <div class="panel-header"><i class="fas fa-globe"></i><h2>Web Scraper Pro</h2></div>
-            <div class="input-group"><label>Website URL</label><input type="url" id="targetUrl" placeholder="https://example.com" value="https://id.wikipedia.org/wiki/Main_Page"></div>
-            <div class="input-group"><label>CSS Selector (optional)</label><input type="text" id="customSelector" placeholder="body, .content"></div>
-            <button class="download-btn" id="scrapeRunBtn">Scrape & Detect All Files</button>
-            <div id="fileStatsArea" class="file-stats" style="display: none;"></div>
-            <div class="result-area" id="scrapeResult">💡 Hasil scrape akan muncul di sini... Nama file & jumlah otomatis terdeteksi.</div>
+        <div id="menuGetStarted">
+            <div class="hero-title">Extract Web Data to Instant ZIP</div>
+            <div class="hero-subtitle">Blue Phantom • Full ZIP + History Permanen</div>
+            <div class="url-example">Example URL: https://id.wikipedia.org/wiki/Main_Page</div>
+            <div class="steps-section">
+                <div class="section-title">How to Use</div>
+                <div class="steps-grid">
+                    <div class="step-card"><div class="step-number">1</div><h3>Enter URL</h3><p>Paste target website link</p></div>
+                    <div class="step-card"><div class="step-number">2</div><h3>Detect Files</h3><p>Auto detects images, CSS, JS & assets</p></div>
+                    <div class="step-card"><div class="step-number">3</div><h3>Download ZIP</h3><p>Get all files packed as ZIP (isi file lengkap)</p></div>
+                </div>
+            </div>
         </div>
-        <div class="menu-loader" id="loaderScraper"></div>
+
+        <div id="menuScraper" style="display: none;">
+            <div class="scraper-panel">
+                <div class="panel-header"><i class="fas fa-globe"></i><h2>Web Scraper Pro</h2></div>
+                <div class="input-group"><label>Website URL</label><input type="url" id="targetUrl" placeholder="https://example.com" value="https://id.wikipedia.org/wiki/Main_Page"></div>
+                <div class="input-group"><label>CSS Selector (optional)</label><input type="text" id="customSelector" placeholder="body, .content"></div>
+                <button class="download-btn" id="scrapeRunBtn">Scrape & Deteksi Semua File</button>
+                <div id="fileStatsArea" class="file-stats" style="display: none;"></div>
+                <div class="result-area" id="scrapeResult">💡 Hasil scrape akan muncul di sini... Nama file & jumlah otomatis terdeteksi.</div>
+            </div>
+        </div>
+        <footer>WebZip Scraper — BluePhantom by Angga Ganteng | ZIP berisi file HTML + metadata + detected_files.txt</footer>
     </div>
-    <footer>WebZip Scraper — BluePhantom by Angga Ganteng</footer>
-</main>
+</div>
 
 <script>
     // Fireflies
@@ -260,93 +250,87 @@
         document.getElementById('scrollProgress').style.width = scrolled + '%';
     });
 
-    // Loading hilang setelah 2 detik
     setTimeout(() => {
         const loader = document.getElementById('loadingScreen');
         if (loader) {
             loader.style.opacity = '0';
             setTimeout(() => {
                 loader.style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
+                document.getElementById('menuGetStarted').style.display = 'block';
             }, 900);
         }
     }, 2100);
 
-    // Welcome Modal
-    const modal = document.getElementById('welcomeModal');
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    closeModalBtn.addEventListener('click', () => {
-        modal.style.opacity = '0';
-        setTimeout(() => modal.style.display = 'none', 400);
-    });
-    document.querySelectorAll('.contact-link').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Contact: @webzip | WhatsApp: +62 812-3456-7890');
-        });
+    // ========== HISTORY PERMANEN (LocalStorage) ==========
+    let scrapeHistory = [];
+    function loadHistory() {
+        const stored = localStorage.getItem('webzip_scrape_history_fixed');
+        if (stored) scrapeHistory = JSON.parse(stored);
+        renderHistory();
+    }
+    function saveHistory() { localStorage.setItem('webzip_scrape_history_fixed', JSON.stringify(scrapeHistory)); }
+    function addToHistory(url, totalFiles, zipName) {
+        scrapeHistory.unshift({ url, totalFiles, zipName, timestamp: new Date().toISOString() });
+        if (scrapeHistory.length > 40) scrapeHistory.pop();
+        saveHistory();
+        renderHistory();
+    }
+    function renderHistory() {
+        const container = document.getElementById('historyList');
+        if (!container) return;
+        if (scrapeHistory.length === 0) {
+            container.innerHTML = '<div style="color:#9ca3ff; text-align:center; padding:24px;">Belum ada history, lakukan scrape dulu.</div>';
+            return;
+        }
+        container.innerHTML = scrapeHistory.map(h => `
+            <div class="history-item" onclick="loadHistoryToScraper('${h.url.replace(/'/g, "\\'")}')">
+                <div class="history-url">📁 ${h.url.length > 48 ? h.url.substring(0,48)+'...' : h.url}</div>
+                <div class="history-total">📄 ${h.totalFiles} files | ${h.zipName}</div>
+                <div class="history-date">🕒 ${new Date(h.timestamp).toLocaleString()}</div>
+            </div>
+        `).join('');
+    }
+    window.loadHistoryToScraper = (url) => {
+        document.getElementById('targetUrl').value = url;
+        document.querySelector('[data-menu="scraper"]').click();
+        setTimeout(() => document.getElementById('scrapeRunBtn').scrollIntoView({ behavior: 'smooth' }), 200);
+        showToast('URL loaded from history', '#60a5fa');
+    };
+    document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
+        if (confirm('Hapus semua history permanen?')) { scrapeHistory = []; saveHistory(); renderHistory(); showToast('History dihapus', '#f87171'); }
     });
 
     // Menu toggle
     const btnGet = document.querySelector('[data-menu="getstarted"]');
     const btnScrape = document.querySelector('[data-menu="scraper"]');
     const menuGet = document.getElementById('menuGetStarted');
-    const menuScraper = document.getElementById('menuScraper');
-    const loaderGet = document.getElementById('loaderGetStarted');
-    const loaderScrape = document.getElementById('loaderScraper');
+    const menuScrapeDiv = document.getElementById('menuScraper');
+    btnGet.addEventListener('click', () => { btnGet.classList.add('active'); btnScrape.classList.remove('active'); menuGet.style.display = 'block'; menuScrapeDiv.style.display = 'none'; });
+    btnScrape.addEventListener('click', () => { btnScrape.classList.add('active'); btnGet.classList.remove('active'); menuGet.style.display = 'none'; menuScrapeDiv.style.display = 'block'; });
 
-    async function switchMenu(showScraper) {
-        if (showScraper) {
-            menuGet.style.display = 'none';
-            menuScraper.style.display = 'block';
-            if(loaderScrape) loaderScrape.style.display = 'block';
-            await new Promise(r => setTimeout(r, 350));
-            if(loaderScrape) loaderScrape.style.display = 'none';
-        } else {
-            menuScraper.style.display = 'none';
-            menuGet.style.display = 'block';
-            if(loaderGet) loaderGet.style.display = 'block';
-            await new Promise(r => setTimeout(r, 350));
-            if(loaderGet) loaderGet.style.display = 'none';
-        }
-    }
-
-    btnGet.addEventListener('click', async () => {
-        btnGet.classList.add('active');
-        btnScrape.classList.remove('active');
-        await switchMenu(false);
-    });
-    btnScrape.addEventListener('click', async () => {
-        btnScrape.classList.add('active');
-        btnGet.classList.remove('active');
-        await switchMenu(true);
-    });
-
-    // ========== PERBAIKAN SCRAPE: CORS PROXY + FALLBACK ==========
+    // ========== SCRAPE FUNCTION ==========
     async function scrapeWebsite() {
         const url = document.getElementById('targetUrl').value.trim();
         const resultDiv = document.getElementById('scrapeResult');
         const statsArea = document.getElementById('fileStatsArea');
-        if (!url) { alert('Masukkan URL dulu bang'); return; }
+        if (!url) { alert('Masukkan URL dulu'); return; }
         resultDiv.innerHTML = '🔄 Mengambil data & mendeteksi file...';
         statsArea.style.display = 'none';
         try {
-            // Gunakan multiple proxy fallback
+            // Proxy dengan fallback
             let proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
             let response = await fetch(proxyUrl);
             if (!response.ok) {
-                // fallback ke corsproxy.io
                 proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
                 response = await fetch(proxyUrl);
             }
             if (!response.ok) throw new Error(`Gagal fetch, status ${response.status}`);
             const html = await response.text();
-            if (!html || html.length < 50) throw new Error('Konten HTML terlalu pendek, kemungkinan diblokir');
-            
+            if (!html || html.length < 50) throw new Error('Konten terlalu pendek');
+
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             let assets = new Set();
-            
-            // src detection
             doc.querySelectorAll('[src]').forEach(el => {
                 let src = el.getAttribute('src');
                 if (src && !src.startsWith('data:') && !src.startsWith('#')) {
@@ -354,7 +338,6 @@
                     if (filename && filename.includes('.')) assets.add(filename);
                 }
             });
-            // href detection
             doc.querySelectorAll('[href]').forEach(el => {
                 let href = el.getAttribute('href');
                 if (href && !href.startsWith('#') && !href.startsWith('mailto:')) {
@@ -362,43 +345,51 @@
                     if (filename && (filename.includes('.css') || filename.includes('.js'))) assets.add(filename);
                 }
             });
-            // style background
-            const allElements = doc.querySelectorAll('*');
-            allElements.forEach(el => {
-                const style = el.getAttribute('style');
-                if (style && style.includes('url(')) {
-                    const matches = style.match(/url\(['"]?([^'"\)]+)['"]?\)/g);
-                    if (matches) matches.forEach(m => {
-                        let imgUrl = m.replace(/url\(['"]?/, '').replace(/['"]?\)/, '');
-                        let filename = imgUrl.split('/').pop().split('?')[0];
-                        if (filename && filename.includes('.') && !assets.has(filename)) assets.add(filename);
-                    });
-                }
-            });
-            
             const unique = [...new Set(assets)].filter(f => f && f.length > 1);
             statsArea.innerHTML = `<div>📦 Total Files: <strong>${unique.length}</strong></div>
                                    <div>📄 Nama file: ${unique.slice(0, 22).join(', ')}${unique.length > 22 ? ' ...' : ''}</div>`;
             statsArea.style.display = 'block';
             resultDiv.innerHTML = `✅ Scrape selesai! Ditemukan ${unique.length} file.\n\n📄 Preview HTML:\n${html.substring(0, 800)}...\n\n📁 Contoh nama file:\n${unique.slice(0, 18).join('\n')}`;
+
+            // Buat nama ZIP dari domain website
+            let domain;
+            try {
+                domain = new URL(url).hostname.replace(/^www\./, '').split('.')[0];
+            } catch(e) { domain = 'website'; }
+            const zipName = `${domain}_scrape_${Date.now()}.zip`;
             
-            // Buat ZIP
-            const filesZip = {
-                'index.html': html,
-                'detected_files.txt': unique.join('\n'),
-                'metadata.json': JSON.stringify({ url, total: unique.length, timestamp: new Date().toISOString() })
-            };
-            let combined = '';
-            for (let [name, content] of Object.entries(filesZip)) combined += `=== ${name} ===\n${content}\n\n`;
-            const blob = new Blob([combined], { type: 'application/zip' });
+            // BUAT FILE ZIP DENGAN STRUKTUR LENGKAP (BUKAN GABUNGAN TEKS, TAPI BINARY ZIP VIA JSZIP?)
+            // Karena tidak bisa pakai library eksternal, kita buat zip dengan struktur folder yg benar menggunakan Blob + pendekatan zip sederhana namun tetap bisa diekstrak.
+            // Untuk memastikan file tidak corrupt, kita gunakan pendekatan zip via FileSaver? Lebih baik kita gunakan kode ZIP murni.
+            // Kita gunakan library JSZip dari CDN (ringan) biar ZIP beneran rapi.
+            // Tapi karena kita tidak ingin ketergantungan, kita buat metode fallback: kita buat zip yang berisi file-file sebagai text/plain namun tetap diekstrak sebagai .txt? tidak bagus.
+            // Alternatif: gunakan JSZip (built-in) lewat CDN. Saya load JSZip sementara untuk memastikan zip valid.
+            if (typeof JSZip === 'undefined') {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+            }
+            const JSZipLib = window.JSZip;
+            const zip = new JSZipLib();
+            zip.file("index.html", html);
+            zip.file("detected_files.txt", unique.join('\n'));
+            zip.file("metadata.json", JSON.stringify({ url, totalFiles: unique.length, timestamp: new Date().toISOString(), sampleFiles: unique.slice(0,50) }, null, 2));
+            // optional: tambahkan folder assets
+            const contentBlob = await zip.generateAsync({ type: "blob" });
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `webzip_${Date.now()}.zip`;
+            link.href = URL.createObjectURL(contentBlob);
+            link.download = zipName;
             link.click();
             URL.revokeObjectURL(link.href);
-            showToast('✅ ZIP siap download!');
+            
+            showToast(`✅ ZIP "${zipName}" siap download! (${unique.length} files)`);
+            addToHistory(url, unique.length, zipName);
         } catch (err) {
-            resultDiv.innerHTML = `❌ Error: ${err.message}. Coba URL lain atau periksa koneksi.`;
+            resultDiv.innerHTML = `❌ Error: ${err.message}. Coba URL lain.`;
             showToast(`Scrape gagal: ${err.message}`, '#ef4444');
         }
     }
@@ -413,6 +404,7 @@
     }
     
     document.getElementById('scrapeRunBtn').addEventListener('click', scrapeWebsite);
+    loadHistory();
     
     // Efek kilatan step-card
     document.querySelectorAll('.step-card').forEach(el => {
